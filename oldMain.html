@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>KIHU script command console</title>
+        <style>
+            
+            html {
+                background-color: black;
+            }
+            
+            #console {
+                font-family: monospace;
+                color:white;
+            }
+            
+            #form {
+                font-family: monospace;
+                background-color: black;
+                color:white;
+            }
+        </style>
+    </head>
+    <body>
+        <form>
+            <input type= "text" size= "60" id= 'form'>
+        </form>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        
+        <script>
+            var cm = {
+                test: function() {
+                    $('#console').prepend('<tr><td>hello, world!</tr>');
+                }
+            }
+        </script>
+        
+        <table id= 'console'>
+            <tr><td></tr>
+        </table>
+        
+
+        
+        <script>
+            $("form").on("submit", function(event) {
+       event.preventDefault();
+       
+        var $input = $(this).find('input');
+        var input = $input.val();
+        
+        $('#console').prepend('<tr><td>'+'>>>'+input+'</tr>');
+        
+        var parts = input.split('.')
+        var fn = null;
+        
+        for (var i = 0; i< parts.length ; i++) {
+          if (fn == null) {
+            fn = cm[parts[i]];
+          } else {
+            fn = fn[parts[i]];
+          }
+        }
+        
+        fn();
+        $('#form').val('');
+       
+    });
+        </script>
+        <script id= 'script'></script>
+
+    </body>
+</html>

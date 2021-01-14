@@ -1,72 +1,222 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>KIHU script command console</title>
-        <style>
+    <html>
+        <head>
+            <style>
+                html {
+                background-color: white;
+                }
             
-            html {
-                background-color: black;
-            }
-            
-            #console {
+                #text {
                 font-family: monospace;
-                color:white;
-            }
-            
-            #form {
-                font-family: monospace;
-                background-color: black;
-                color:white;
-            }
-        </style>
-    </head>
-    <body>
-        <form>
-            <input type= "text" size= "60" id= 'form'>
-        </form>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-        
-        <script>
-            var cm = {
-                test: function() {
-                    $('#console').prepend('<tr><td>hello, world!</tr>');
+                color:black;
+                }
+                
+                #form {
+                    font-family: monospace;
+                    background-color: white;
+                    color:black;
+                }
+            </style>
+        </head>
+        <body>
+            <form>
+                <input type= "text" size= "160" id= 'form' autocomplete="off">
+            </form>
+            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js">     //the jQuery library</script>
+
+            <p id="text">
+                <br>
+            </p>
+
+            <script>
+                var files = {   //the files object
+                    txt: {      //text files
+                        tmp: ""
+                    },
+                    js: {       //javascript files
+                        tmp: ""
+                    },
+                    json: {     //json files
+                        tmp: ""
+                    }
+                }
+
+                var msg = {
+                    err: [      //the error messages
+                    "error: file not found", 
+                    "error: cannot open that file type in that way", 
+                    "error: that file type doesn't exist",
+                    "error: that file type alredy exists"
+                    ]
+                }
+
+                var lib = {
+                    log: function(log, file) {     //the console output shorthand for inner .js files
+                        $('#text').prepend(file+' >> '+log+'<br>')
+                    }, 
+                    cmlog: function(log) {      //the console output shorthand for the system
+                        $('#text').prepend(log+'<br>');
+                    },
+                    usrLog: function(log) {     //the console output shorthand for user output
+                        $('#text').prepend('<br>');
+                        $('#text').prepend('>>>'+log+'<br>');
+                    }
+                }
+
+                var cm = {
+                    test: function(a) {     //for testing
+                        lib.cmlog("all, good!");
+                        lib.cmlog("argument is: "+a);
+                    },
+                    console: {
+                        clear: function() {     //clears the output console
+                            $('#text').html('<br>');
+                        }
+                    },
+                    file: {
+                        set: function(nameAndType, contents) {      //sets a files contents
+                            var nmTyp = nameAndType.split('.');     //splits the _._ into [_, _]
+                            var name = nmTyp[0];       //gets the name of the file
+                            var type = nmTyp[1];        //gets the type of file
+                            var Type = files[type];     //gets the type object
+                            if (Type == undefined) {
+                                lib.cmlog(msg.err[2]);  //if the file type is not txt, js, json; send error 2
+                            } else {
+                                if (Type[name] == undefined) {
+                                    Type[name] = contents;      //if that file dosent exist, make it
+                                    lib.cmlog('file: '+nameAndType+' was created');
+                                } else {
+                                    Type[name] = contents;      //if that file exists, replace it
+                                    lib.cmlog('file: '+nameAndType+' was replaced');
+                                }
+                            }
+                        },
+                        read: function(nameAndType) {       //reads file contents
+                                var nmTyp = nameAndType.split('.');     //splits the _._ into [_, _]
+                                var name = nmTyp[0];        //gets the name of the file
+                                var type = nmTyp[1];        //gets the type of file
+                                var Type = files[type];     //gets the type object
+                                if (Type[name] == undefined) {
+                                    lib.cmlog(msg.err[0]);      //if that file dosent exist, send error 0
+                                } else {
+                                    lib.cmlog(nameAndType+': '+Type[name]);     //ouput the contents of the file
+                                }
+                        },
+                        delete: function(nameAndType) {     //deletes a file
+                                var nmTyp = nameAndType.split('.');     //splits the _._ into [_, _]
+                                var name = nmTyp[0];        //gets the name of the file
+                                var type = nmTyp[1];        //gets the type of file
+                                var Type = files[type];     //gets the type object
+                                if (Type[name] == undefined) {
+                                    lib.cmlog(msg.err[0]);      //if that file dosent exist, send error 0
+                                } else {
+                                    delete Type[name];      //delete that file
+                                    lib.cmlog('file: '+nameAndType+' wes deleted');
+                                }
+                        },
+                        run: function(nameAndType, arg) {       //WIP-------------------------------
+                            var nmTyp = nameAndType.split('.');         //you will be able to run .js files
+                            var name = nmTyp[0];
+                            var type = nmTyp[1];
+                            var Type = files[type];
+                            var func = Type[name];
+                            if (Type[name] == undefined) {
+                                lib.cmlog(msg.err[0]);
+                            } else if (type == "js") {
+                                    eval(func);
+                                    //fun(arg);
+                                } else {
+                                    lib.cmlog(msg.err[1]);
+                                }                               //WIP--------------------------------
+                        },
+                        add: {
+                            fileType: function(type) {          //WIP--------------------------------
+                                Type = files[type];                     //you will be able to add file types
+                                if (Type == undefined) {
+                                    files[type] = {};
+                                    Type = files[type];
+                                    Type.tmp = "";
+                                } else {
+                                    lib.cmlog(msg.err[3]);
+                                }
+                            }                                   //WIP---------------------------------
+                        },
+                        list: {
+                            all: function() {
+                                lib.cmlog(JSON.stringify(files));   //lists the files object as a string
+                            },
+                            txt: function() {
+                                lib.cmlog(JSON.stringify(files.txt));   //lists the objects under txt as a string
+                            },
+                            js: function() {
+                                lib.cmlog(JSON.stringify(files.js));    //lists the objects under js as a string
+                            },
+                            json: function() {
+                                lib.cmlog(JSON.stringify(filesjson));   //lists the objects under json as a string
+                            }
+                        }
+                    },
+                    msg: {
+                        encode: function(msg) {
+                                //the array that assigns all elegable characters a 2-digit number
+                            var enc = [null,null,null,null,null,null,null,null,null,null,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' ',',','.','/','0','1','2','3','4','5','6','7','8','9'];
+                            var msgA = msg.split('');   ////makes an array of every character in the input message
+                            var msgEnc = "";    //will be the encoded message
+                            for (var i = 0; i< msgA.length; i++) {
+                                msgEnc = msgEnc + enc.indexOf(msgA[i]); //adds the next encoded character to msgEnc
+                            }
+                            lib.cmlog("^^^ Encoded message ^^^"); //outputs: ^^^ Encoded message ^^^
+                            lib.cmlog(msgEnc);  //outputs the encoded message
+                        },
+                        decode: function(msgEnc) {
+                                //the array that assigns all elegable characters a 2-digit number
+                            var enc = [null,null,null,null,null,null,null,null,null,null,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' ',',','.','/','0','1','2','3','4','5','6','7','8','9'];
+                            var msgA = msgEnc.split('');    //makes an array of every character in the encoded message
+                            var msgB = [];  //will be an array of every 2-digit identifier number
+                            var msg = "";   //will be the decoded message
+                            for (var i = 0; i < msgA.length; i+= 2) {
+                                msgB.push(msgA[i+0] + msgA[i+1]);   //makes msgB into an array of the 2-digit codes
+                            };
+                            for (var j = 0; j< msgB.length; j++) {
+                                msg = msg + enc[msgB[j]];    //adds the next decoded character of msgB
+                            };
+                            lib.cmlog("^^^ Decoded message ^^^");   //outputs: ^^^ Decoded message ^^^
+                            lib.cmlog(msg);    //outputs the decoded message
+                        }
+                    }
+                }
+                $("form").on("submit", function(event) {
+            event.preventDefault();     //stops the form from reloading the page, I think
+
+            var $input = $(this).find('input');     //step 1 of getting the form input
+            var input = $input.val();       //step 2 of getting the form input
+
+            lib.usrLog(input);      //initially outputting the user's input to keep track of what happened later
+            var prts = input.split("; ");      //splits the user's input from functin called to arguments
+            var parts = prts[0].split('.');     //splits the first part of the input(the function naming part)
+            var fn = null;      //fn will be called later, as the function
+
+            for (var i = 0; i< parts.length ; i++) {
+                if (fn == null) {
+                    fn = cm[parts[i]];      //if this is the first loop, build the first part of the fn function
+                } else {
+                    fn = fn[parts[i]];      //if this is not the first loop, build on top of the fn function
+                }
+            };
+
+            if (prts[1] == undefined) {
+                fn();       //if there are no arguments, call fn without any
+            } else {
+                var arguments = prts[1].split('//');   //if there are args, split them on ' & '
+                if (arguments.length == 1) {
+                    fn(arguments[0]);       //if there is one arg, call fn with one
+                } else if (arguments.length == 2) {
+                    fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
                 }
             }
-        </script>
-        
-        <table id= 'console'>
-            <tr><td></tr>
-        </table>
-        
+            $('#form').val('');
 
-        
-        <script>
-            $("form").on("submit", function(event) {
-       event.preventDefault();
-       
-        var $input = $(this).find('input');
-        var input = $input.val();
-        
-        $('#console').prepend('<tr><td>'+'>>>'+input+'</tr>');
-        
-        var parts = input.split('.')
-        var fn = null;
-        
-        for (var i = 0; i< parts.length ; i++) {
-          if (fn == null) {
-            fn = cm[parts[i]];
-          } else {
-            fn = fn[parts[i]];
-          }
-        }
-        
-        fn();
-        $('#form').val('');
-       
-    });
-        </script>
-        <script id= 'script'></script>
-
-    </body>
-</html>
+            });
+            </script>
+        </body>
+    </html>
