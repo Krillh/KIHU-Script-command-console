@@ -3,18 +3,18 @@
         <head>
             <style>
                 html {
-                background-color: white;
+                background-color: rgb(0, 0, 0);
                 }
             
                 #text {
                 font-family: monospace;
-                color:black;
+                color:rgb(255, 255, 255);
                 }
                 
                 #form {
                     font-family: monospace;
-                    background-color: white;
-                    color:black;
+                    background-color: rgb(0, 0, 0);
+                    color:rgb(255, 255, 255);
                 }
             </style>
         </head>
@@ -118,7 +118,7 @@
                                     lib.cmlog('file: '+nameAndType+' wes deleted');
                                 }
                         },
-                        run: function(nameAndType, arg) {       //WIP-------------------------------
+                        run: function(nameAndType) {            //WIP-------------------------------
                             var nmTyp = nameAndType.split('.');         //you will be able to run .js files
                             var name = nmTyp[0];
                             var type = nmTyp[1];
@@ -128,7 +128,6 @@
                                 lib.cmlog(msg.err[0]);
                             } else if (type == "js") {
                                     eval(func);
-                                    //fun(arg);
                                 } else {
                                     lib.cmlog(msg.err[1]);
                                 }                               //WIP--------------------------------
