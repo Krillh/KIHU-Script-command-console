@@ -6,6 +6,7 @@ what is WIP(don't use if you want good results)
 
 syntax:
     -(function, written as object)\~(arg1)//(arg2)
+
 commands:
     -test~(any)    -just to test, to make sure things are working
     -console.clear   -clears the output text area
