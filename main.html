@@ -19,7 +19,7 @@
             </style>
         </head>
         <body>
-            <form>
+            <form id="input form">
                 <input type= "text" size= "160" id= 'form' autocomplete="off">
             </form>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js">     //the jQuery library
@@ -30,7 +30,7 @@
                 <br>
             </p>
 
-            <script>
+            <script id="files,msg,lib">
                 var files = {   //the files object
                     txt: {      //text files
                         tmp: "",
@@ -67,6 +67,9 @@
                     }
                 }
 
+            </script>
+
+            <script id="commands">
                 var cm = {
                     test: function(a) {     //for testing
                         lib.cmlog("all, good!");
@@ -118,8 +121,8 @@
                                     lib.cmlog('file: '+nameAndType+' wes deleted');
                                 }
                         },
-                        run: function(nameAndType) {            //WIP-------------------------------
-                            var nmTyp = nameAndType.split('.');         //you will be able to run .js files
+                        run: function(nameAndType) {    //runs .js files
+                            var nmTyp = nameAndType.split('.');
                             var name = nmTyp[0];
                             var type = nmTyp[1];
                             var Type = files[type];
@@ -145,22 +148,22 @@
                             }                                   //WIP---------------------------------
                         },
                         list: {
-                            all: function() {
-                                lib.cmlog(JSON.stringify(files));   //lists the files object as a string
+                            all: function() {   //lists the files object as a string
+                                lib.cmlog(JSON.stringify(files));
                             },
-                            txt: function() {
-                                lib.cmlog(JSON.stringify(files.txt));   //lists the objects under txt as a string
+                            txt: function() {   //lists the objects under txt as a string
+                                lib.cmlog(JSON.stringify(files.txt));
                             },
-                            js: function() {
-                                lib.cmlog(JSON.stringify(files.js));    //lists the objects under js as a string
+                            js: function() {    //lists the objects under js as a string
+                                lib.cmlog(JSON.stringify(files.js));
                             },
-                            json: function() {
-                                lib.cmlog(JSON.stringify(filesjson));   //lists the objects under json as a string
+                            json: function() {  //lists the objects under json as a string
+                                lib.cmlog(JSON.stringify(filesjson));
                             }
                         }
                     },
                     msg: {
-                        encode: function(msg) {
+                        encode: function(msg) {     //encodes a message from english to KIHU Encoding
                                 //the array that assigns all elegable characters a 2-digit number
                             var enc = [null,null,null,null,null,null,null,null,null,null,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' ',',','.','/','0','1','2','3','4','5','6','7','8','9'];
                             var msgA = msg.split('');   ////makes an array of every character in the input message
@@ -171,7 +174,7 @@
                             lib.cmlog("^^^ Encoded message ^^^"); //outputs: ^^^ Encoded message ^^^
                             lib.cmlog(msgEnc);  //outputs the encoded message
                         },
-                        decode: function(msgEnc) {
+                        decode: function(msgEnc) {  //decodes a message from KIHU Encoding to english
                                 //the array that assigns all elegable characters a 2-digit number
                             var enc = [null,null,null,null,null,null,null,null,null,null,'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z',' ',',','.','/','0','1','2','3','4','5','6','7','8','9'];
                             var msgA = msgEnc.split('');    //makes an array of every character in the encoded message
@@ -188,7 +191,7 @@
                         }
                     },
                     note: {
-                        write: function(note) {
+                        write: function(note) {     //makes a note
                             if (files.txt.notes == undefined) {
                                 lib.cmlog(msg.err[4]);
                             } else {
@@ -196,7 +199,7 @@
                                 lib.cmlog('\"'+note+'\" added to entrie: '+(files.txt.notes.length - 1)+' of notes.txt');
                             }
                         },
-                        read: function(index) {
+                        read: function(index) {     //outputs the contents of one or all the notes
                             if (index == "all") {
                                 lib.cmlog(files.txt.notes);
                                 lib.cmlog('notes');
@@ -205,7 +208,7 @@
                                 lib.cmlog('notes');
                             }
                         },
-                        delete: function(index) {
+                        delete: function(index) {   //deletes one or all the notes
                             if (index == "all") {
                                 files.txt.notes = ["0: entrie (/end)"];
                                 lib.cmlog('cleared notes');
@@ -216,38 +219,42 @@
                         }
                     }
                 }
+
+            </script>
+
+            <script id="calling functions">
                 $("form").on("submit", function(event) {
-            event.preventDefault();     //stops the form from reloading the page, I think
+                    event.preventDefault();     //stops the form from reloading the page, I think
 
-            var $input = $(this).find('input');     //step 1 of getting the form input
-            var input = $input.val();       //step 2 of getting the form input
+                    var $input = $(this).find('input');     //step 1 of getting the form input
+                    var input = $input.val();       //step 2 of getting the form input
 
-            lib.usrLog(input);      //initially outputting the user's input to keep track of what happened later
-            var prts = input.split("~");      //splits the user's input from functin called to arguments
-            var parts = prts[0].split('.');     //splits the first part of the input(the function naming part)
-            var fn = null;      //fn will be called later, as the function
+                    lib.usrLog(input);      //initially outputting the user's input to keep track of what happened later
+                    var prts = input.split("~");      //splits the user's input from functin called to arguments
+                    var parts = prts[0].split('.');     //splits the first part of the input(the function naming part)
+                    var fn = null;      //fn will be called later, as the function
 
-            for (var i = 0; i< parts.length ; i++) {
-                if (fn == null) {
-                    fn = cm[parts[i]];      //if this is the first loop, build the first part of the fn function
-                } else {
-                    fn = fn[parts[i]];      //if this is not the first loop, build on top of the fn function
-                }
-            };
+                    for (var i = 0; i< parts.length ; i++) {
+                        if (fn == null) {
+                            fn = cm[parts[i]];      //if this is the first loop, build the first part of the fn function
+                        } else {
+                            fn = fn[parts[i]];      //if this is not the first loop, build on top of the fn function
+                        }
+                    };
 
-            if (prts[1] == undefined) {
-                fn();       //if there are no arguments, call fn without any
-            } else {
-                var arguments = prts[1].split('//');   //if there are args, split them on ' & '
-                if (arguments.length == 1) {
-                    fn(arguments[0]);       //if there is one arg, call fn with one
-                } else if (arguments.length == 2) {
-                    fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
-                }
-            }
-            $('#form').val('');
+                    if (prts[1] == undefined) {
+                        fn();       //if there are no arguments, call fn without any
+                    } else {
+                        var arguments = prts[1].split('//');   //if there are args, split them on ' & '
+                        if (arguments.length == 1) {
+                            fn(arguments[0]);       //if there is one arg, call fn with one
+                        } else if (arguments.length == 2) {
+                            fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
+                        }
+                    }
+                    $('#form').val('');
 
-            });
+                });
             </script>
         </body>
     </html>
