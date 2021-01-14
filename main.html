@@ -200,15 +200,19 @@
                         read: function(index) {
                             if (index == "all") {
                                 lib.cmlog(files.txt.notes);
+                                lib.cmlog('notes');
                             } else {
                                 lib.cmlog(files.txt.notes[index]);
+                                lib.cmlog('notes');
                             }
                         },
                         delete: function(index) {
                             if (index == "all") {
-                                files.txt.notes = [];
+                                files.txt.notes = ["0: entrie (/end)"];
+                                lib.cmlog('cleared notes');
                             } else {
                                 files.txt.notes.splice(index, 1);
+                                lib.cmlog("deleted entire: "+index);
                             }
                         }
                     }
