@@ -33,7 +33,8 @@
             <script>
                 var files = {   //the files object
                     txt: {      //text files
-                        tmp: ""
+                        tmp: "",
+                        notes: ["0: entrie (/end)"]
                     },
                     js: {       //javascript files
                         tmp: ""
@@ -48,7 +49,8 @@
                     "error: file not found", 
                     "error: cannot open that file type in that way", 
                     "error: that file type doesn't exist",
-                    "error: that file type alredy exists"
+                    "error: that file type alredy exists",
+                    "error: no notes.txt found, cannot write notes"
                     ]
                 }
 
@@ -184,6 +186,30 @@
                             };
                             lib.cmlog("^^^ Decoded message ^^^");   //outputs: ^^^ Decoded message ^^^
                             lib.cmlog(msg);    //outputs the decoded message
+                        }
+                    },
+                    note: {
+                        write: function(note) {
+                            if (files.txt.notes == undefined) {
+                                lib.cmlog(msg.err[4]);
+                            } else {
+                                files.txt.notes.push(' '+files.txt.notes.length+': '+note + ' (/end)');
+                                lib.cmlog('\"'+note+'\" added to entrie: '+(files.txt.notes.length - 1)+' of notes.txt');
+                            }
+                        },
+                        read: function(index) {
+                            if (index == "all") {
+                                lib.cmlog(files.txt.notes);
+                            } else {
+                                lib.cmlog(files.txt.notes[index]);
+                            }
+                        },
+                        delete: function(index) {
+                            if (index == "all") {
+                                files.txt.notes = [];
+                            } else {
+                                files.txt.notes.splice(index, 1);
+                            }
                         }
                     }
                 }
