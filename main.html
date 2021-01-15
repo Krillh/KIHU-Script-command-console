@@ -205,7 +205,7 @@
                                     eval(func);
                                 } else {
                                     lib.cmlog(msg.err[1]);
-                                }                               //WIP--------------------------------
+                                }
                         },
                         add: {
                             fileType: function(type) {          //WIP--------------------------------
@@ -311,7 +311,7 @@
                         }
                     },
                     code: {
-                        impr: function() {
+                        startup: function() {
                             var impr = [
                                 'var d = ' + Math.random() + ';',
                                 'var a = ' + Math.random() + ';',
@@ -330,18 +330,54 @@
                                 'actu.at(<mrr/vr>alwo/dalk.brn(awk)</ale>)'
                             ];
                             for (var z = 0; z < 10; z++) {
-                                for (var i = 0; i < 100; i++) {
+                                for (var i = 0; i < 10; i++) {
                                     setTimeout(function(i) {
                                         lib.cmlog(impr[Math.floor(Math.random()*impr.length)]);
-                                    }, 500);
+                                    }, 50*i);
                                 };
                             };
-                            setTimeout(function() {cm.console.clear();}, 2000);
-                            
+                            setTimeout(function(){cm.code.tree();}, 600);
+                        },
+                        tree: function() {
+                            var impr = [
+                                "|",
+                                "|__brnch/ff/hfd/zipe",
+                                "|",
+                                "|____setCons/godle/cloe",
+                                "|___fod.dia/sope/arod/noni/ddo",
+                                "|",
+                                "|______vids/df/gfs/as",
+                                "|___sfb/izc/ggh/qrw/mmm.nui",
+                                "|",
+                                "|________gs/adf/rnccx/gollw/zrq",
+                                "|___________________________vsdz/domoe/sfd.txi",
+                                "|",
+                                "|_________________________rwe/lndf/tuy/vv.gol"
+                            ];
+                            for (var z = 0; z < 10; z++) {
+                                for (var i = 0; i < 10; i++) {
+                                    setTimeout(function(i) {
+                                        lib.cmlog(impr[Math.floor(Math.random()*impr.length)]);
+                                    }, 50*i);
+                                };
+                            };
+                            setTimeout(function() {cm.console.clear();}, 1000);
+                                setTimeout(function() {lib.cmlog('Startup complete.');}, 1100)
+                        }
+                    },
+                    story: {
+                        launch: function() {
+                            setTimeout(function() {lib.cmlog('t-5');}, 1000);
+                            setTimeout(function() {lib.cmlog('t-4');}, 2000);
+                            setTimeout(function() {lib.cmlog('t-3');}, 3000);
+                            setTimeout(function() {lib.cmlog('t-2');}, 4000);
+                            setTimeout(function() {lib.cmlog('t-1');}, 5000);
+                            setTimeout(function() {lib.cmlog('LAUNCH');}, 6000);
                         }
                     }
-                }
+                };
 
+                cm.code.startup();
             </script>
 
             <script id="calling functions">
