@@ -69,11 +69,83 @@
 
             </script>
 
+            <script>
+                var setFormVal = {
+                    val: '',
+                }
+                var vars = {
+                    game: {
+                        mover: {
+                            isRunning: 0,
+                            playerX: 2,
+                            playerY: 2,
+                            drawFeild: function() {
+                                var playerX = vars.game.mover.playerX;  //player X
+                                var playerY = vars.game.mover.playerY;  //player Y
+                                var output = '';    //output
+                                for (var i = 0; i < 10; i++) {      //cycles through rows
+                                    if (playerY == i) {
+                                        for (var l = 0; l < 10; l++) {      //cycles through segments of the row of playerY
+                                            if (playerX == l) {     //adds an X to playerX of that row
+                                                output += "X";
+                                            } else {    //adds O otherwise
+                                                output += "O";
+                                            }
+                                        }
+                                        lib.cmlog(output);  //output row
+                                    } else {    //if playerY is not in row, output an empty one
+                                        lib.cmlog('OOOOOOOOOO');
+                                    }
+                                }
+                            },
+                            move: function(direction) {
+                                var playerX = vars.game.mover.playerX;  //player X
+                                var playerY = vars.game.mover.playerY;  //player Y
+
+                                if (direction == 'w') {
+                                    vars.game.mover.playerY++;
+                                } else if (direction == 'a') {
+                                    vars.game.mover.playerX--;
+                                } else if (direction == 's') {
+                                    vars.game.mover.playerY--;
+                                } else if (direction == 'd') {
+                                    vars.game.mover.playerX++;
+                                }
+                                vars.game.mover.drawFeild();
+                            }
+                        },
+                        any: {
+                            draw: function(size, x, y) {
+                                for (var i = 0; i < size; i++) {     //cycles through rows
+                                    var output = '';
+                                    if (y == i) {
+                                        for (var l = 0; l < size; l++) {      //cycles through segments of the row of playerY
+                                            if (x == l) {     //adds an X to playerX of that row
+                                                output += "-";
+                                            } else {    //adds O otherwise
+                                                output += "0";
+                                            }
+                                        }
+                                        lib.cmlog(output);  //output row
+                                    } else {    //if playerY is not in row, output an empty one
+                                        for (var x = 0; x < size; x++) {
+                                            output += "-";
+                                        }
+                                        lib.cmlog(output);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            </script>
+
             <script id="commands">
                 var cm = {
                     test: function(a) {     //for testing
                         lib.cmlog("all, good!");
                         lib.cmlog("argument is: "+a);
+                        setTimeout(function(){ lib.cmlog(a); }, 300);
                     },
                     console: {
                         clear: function() {     //clears the output console
@@ -217,6 +289,56 @@
                                 lib.cmlog("deleted entire: "+index);
                             }
                         }
+                    },
+                    game: {
+                        mover: {
+                            run: function() {
+                                vars.game.mover.isRunning = 1;
+                                vars.game.mover.drawFeild();
+                            },
+                            play: function(direction) {
+                                if (vars.game.mover.isRunning == 1) {
+                                    vars.game.mover.move(direction);
+                                    setFormVal.val = 'game.mover.play~';
+                                }
+                            },
+                            rules: function() {
+                                lib.cmlog('')
+                            },
+                            end: function() {
+                                vars.game.mover.isRunning = 0;
+                            }
+                        }
+                    },
+                    code: {
+                        impr: function() {
+                            var impr = [
+                                'var d = ' + Math.random() + ';',
+                                'var a = ' + Math.random() + ';',
+                                'var mitr = ' + Math.random() + ';',
+                                'var hos = ' + Math.random() + ';',
+                                'for (i = 0; i < 50; i++) {',
+                                'for (l = 0; l < 58; l++) {',
+                                '};',
+                                'while (a = true) {',
+                                'dm.maga();',
+                                '$mmd[arft];',
+                                'fnc("function = null");',
+                                '#binDsoRt[l].scndry(hoft);',
+                                'addNot@svn.cde("6&7-503");',
+                                'lst.path(thsCmp/usr/andek/fle/set/git/github/repos/voww/gotm/fool.txt)',
+                                'actu.at(<mrr/vr>alwo/dalk.brn(awk)</ale>)'
+                            ];
+                            for (var z = 0; z < 10; z++) {
+                                for (var i = 0; i < 100; i++) {
+                                    setTimeout(function(i) {
+                                        lib.cmlog(impr[Math.floor(Math.random()*impr.length)]);
+                                    }, 500);
+                                };
+                            };
+                            setTimeout(function() {cm.console.clear();}, 2000);
+                            
+                        }
                     }
                 }
 
@@ -252,8 +374,8 @@
                             fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
                         }
                     }
-                    $('#form').val('');
-
+                    $('#form').val(setFormVal.val);
+                    setFormVal.val = ''
                 });
             </script>
         </body>
