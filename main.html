@@ -82,41 +82,304 @@
                     game: {
                         mover: {
                             isRunning: 0,
-                            playerX: 2,
-                            playerY: 2,
-                            drawFeild: function() {
+                            playerX: 0,
+                            playerY: 0,
+                            wallXs: [],
+                            wallYs: [],
+                            goalX: 0,
+                            goalY: 0,
+                            drawFeild: function(size) {
                                 var playerX = vars.game.mover.playerX;  //player X
                                 var playerY = vars.game.mover.playerY;  //player Y
+                                var goalX = vars.game.mover.goalX;      //goal X
+                                var goalY = vars.game.mover.goalY;      //goal Y
+                                var wallXs = vars.game.mover.wallXs;    //wall X's
+                                var wallYs = vars.game.mover.wallYs;    //wal Y's
+                                var isDead = null;     //is dead
+                                var isWin = false;
+                                var isNoWall = true;
                                 var output = '';    //output
-                                for (var i = 0; i < 10; i++) {      //cycles through rows
-                                    if (playerY == i) {
-                                        for (var l = 0; l < 10; l++) {      //cycles through segments of the row of playerY
-                                            if (playerX == l) {     //adds an X to playerX of that row
-                                                output += "X";
-                                            } else {    //adds O otherwise
-                                                output += "O";
+                                for (var y = 0; y < size; y++) {    //cycles through rows
+                                    output = '';
+                                    for (var x = 0; x < size*4; x++) {  //cycles through cells of the row
+                                        for (var z = 0; z < wallXs.length; z++) {   //cycles through walls
+                                            if ((wallYs[z] == y)&&(wallXs[z] == x)) {    //if the selected wall's y-value is the same as the selected cell's
+                                                output += '0';
+                                                wallPos = [wallXs[z], wallYs[z]];
+                                                if ((playerX == wallXs[z])&&(playerY == wallYs[z])) {
+                                                    isDead = 'wall';
+                                                } else if ((goalX == playerX)&&(goalY == playerY)) {
+                                                    isWin = true;
+                                                }
+                                                isNoWall = false;
                                             }
                                         }
-                                        lib.cmlog(output);  //output row
-                                    } else {    //if playerY is not in row, output an empty one
-                                        lib.cmlog('OOOOOOOOOO');
+                                        if (isNoWall) {
+                                            if ((playerY == y)&&(playerX == x)) { //if player position is the same as the selected cell
+                                                output += 'Y';
+                                            } else if ((goalX == x)&&(goalY == y)) {
+                                                output += 'G';
+                                            } else {
+                                                output += '-';
+                                            }
+                                        }
+                                        isNoWall = true;
                                     }
+
+                                    lib.cmlog(output);  //output the row
                                 }
+                                if (isDead == 'wall') {
+                                    vars.game.mover.gameover('ran into a wall');
+                                }
+                                if (isWin) {
+                                    vars.game.mover.win("a win's a win, take it.");
+                                }
+                                
                             },
                             move: function(direction) {
                                 var playerX = vars.game.mover.playerX;  //player X
                                 var playerY = vars.game.mover.playerY;  //player Y
 
-                                if (direction == 'w') {
+                                if (direction == 'w') {         //move  up  with w
                                     vars.game.mover.playerY++;
-                                } else if (direction == 'a') {
+                                } else if (direction == 'a') {  //move left with a
                                     vars.game.mover.playerX--;
-                                } else if (direction == 's') {
+                                } else if (direction == 's') {  //move down with s
                                     vars.game.mover.playerY--;
-                                } else if (direction == 'd') {
+                                } else if (direction == 'd') {  //move right with d
                                     vars.game.mover.playerX++;
                                 }
-                                vars.game.mover.drawFeild();
+                                vars.game.mover.drawFeild(20);
+                            },
+                            gameover: function(deathMsg) {
+                                cm.game.mover.end();
+                                setFormVal.val = 'game.mover.run';
+                                lib.cmlog('GAME OVER...');
+                                lib.cmlog(deathMsg);
+                                    vars.game.mover.isRunning = 0;      //reseting variables
+                                    vars.game.mover.playerX = 0;
+                                    vars.game.mover.playerY = 0;
+                                    vars.game.mover.wallXs = [];
+                                    vars.game.mover.wallYs = [];
+                                    vars.game.mover.goalX = 0;
+                                    vars.game.mover.goalY = 0;
+                                //
+                            },
+                            win: function(winMsg) {
+                                cm.game.mover.end();
+                                setFormVal.val = 'game.mover.run';
+                                lib.cmlog('YOU WIN!!!');
+                                lib.cmlog(winMsg);
+                                    vars.game.mover.isRunning = 0;      //reseting variables
+                                    vars.game.mover.playerX = 0;
+                                    vars.game.mover.playerY = 0;
+                                    vars.game.mover.wallXs = [];
+                                    vars.game.mover.wallYs = [];
+                                    vars.game.mover.goalX = 0;
+                                    vars.game.mover.goalY = 0;
+                                //
+                            },
+                            level: [
+                                [1,1,  3,3,  2,2],
+                                [0,1,  0,3,  0,2, 1,2, 2,2],
+                                [0,0,  0,5,  1,0, 1,1, 0,3, 1,3, 1,4, 1,5]
+                            ]
+                        },
+                        tycoon: {
+                            isRunning: 0,
+                            daysToPriceChange: 0,
+                            usrCash: 100,
+                            gameDay: 0,
+                            resourceList: ["wheat", "coal", "wood", "tea", "plastics", "herbs", "steel"],
+                            items: {
+                                wheat: {
+                                    basePrice: 10,
+                                    MaxDeveation: 5
+                                },
+                                coal: {
+                                    basePrice: 35,
+                                    MaxDeveation: 10
+                                },
+                                wood: {
+                                    basePrice: 15,
+                                    MaxDeveation: 12
+                                },
+                                tea: {
+                                    basePrice: 45,
+                                    MaxDeveation: 23
+                                },
+                                plastics: {
+                                    basePrice: 30,
+                                    MaxDeveation: 15
+                                },
+                                herbs: {
+                                    basePrice: 65,
+                                    MaxDeveation: 37
+                                },
+                                steel: {
+                                    basePrice: 40,
+                                    MaxDeveation: 35
+                                }
+                            },
+                            userInv: {
+                                wheat: {
+                                    amnt: 0
+                                },
+                                coal: {
+                                    amnt: 0
+                                },
+                                wood: {
+                                    amnt: 0
+                                },
+                                tea: {
+                                    amnt: 0
+                                },
+                                plastics: {
+                                    amnt: 0
+                                },
+                                herbs: {
+                                    amnt: 0
+                                },
+                                steel: {
+                                    amnt: 0
+                                }
+                            },
+                            market: {
+                                wheat: {
+                                    amnt: 1000,
+                                    price: 10,
+                                    popularity: 50,
+                                    nxtPrce: 10
+                                },
+                                coal: {
+                                    amnt: 400,
+                                    price: 35,
+                                    popularity: 50,
+                                    nxtPrce: 35
+                                },
+                                wood: {
+                                    amnt: 700,
+                                    price: 15,
+                                    popularity: 50,
+                                    nxtPrce: 15
+                                },
+                                tea: {
+                                    amnt: 250,
+                                    price: 45,
+                                    popularity: 50,
+                                    nxtPrce: 45
+                                },
+                                plastics: {
+                                    amnt: 650,
+                                    price: 30,
+                                    popularity: 50,
+                                    nxtPrce: 30
+                                },
+                                herbs: {
+                                    amnt: 100,
+                                    price: 65,
+                                    popularity: 50,
+                                    nxtPrce: 65
+                                },
+                                steel: {
+                                    amnt: 400,
+                                    price: 40,
+                                    popularity: 50,
+                                    nxtPrce: 40
+                                }
+                            },
+                            sell: function(item, amount) {
+                                var cash = vars.game.tycoon.usrCash;
+                                var usrInv = vars.game.tycoon.userInv;
+                                var market = vars.game.tycoon.market;
+                                var mktItm = market[item];
+                                var itm = usrInv[item];
+                                if (itm !== undefined) {
+                                    if (itm.amnt > amount) {
+                                        mktItm += amount;
+                                        cash += mktItm.price * amount;
+                                        itm.amnt -= amount;
+                                    } else {
+                                        lib.cmlog('you don\'t have that much ' + item);
+                                    }
+                                } else {
+                                    lib.cmlog(item + 'doesn\'t exist');
+                                }
+                            },
+                            buy: function(item, amount) {
+                                var cash = vars.game.tycoon.usrCash;
+                                var usrInv = vars.game.tycoon.userInv;
+                                var market = vars.game.tycoon.market;
+                                var mktItm = market[item];
+                                var itm = market[item];
+                                if (mktItm !== undefined) {
+                                    if (mktItm.amnt > amount) {
+                                        mktItm -= amount;
+                                        cash -= mktItm.price * amount;
+                                        itm.amnt += amount;
+                                    } else {
+                                        lib.cmlog('the market doesn\'t have that much ' + item);
+                                    }
+                                } else {
+                                    lib.cmlog(item + 'doesn\'t exist');
+                                }
+                            },
+                            wait: function(time) {
+                                vars.game.tycoon.gameDay += time;
+                                for (var i = 0; i < time; i++) {
+                                    vars.game.tycoon.marketChange();
+                                }
+                                vars.game.tycoon.daylyDisplay();
+                            },
+                            daylyDisplay: function() {
+                                lib.cmlog('day: '+vars.game.tycoon.gameDay);
+                                lib.cmlog('cash: $'+vars.game.tycoon.usrCash);
+                                lib.cmlog('i to list iventory');
+                                lib.cmlog('m to list market prices');
+                                lib.cmlog('s to sell');
+                                lib.cmlog('b to buy');
+                                lib.cmlog('w to wait');
+                                lib.cmlog('r to rest until next day');
+                                lib.cmlog('');
+                            },
+                            marketChange: function() {
+                                var market = vars.game.tycoon.market;
+                                var resourceList = vars.game.tycoon.resourceList;
+                                var selR = null;
+                                var DTPC = vars.game.tycoon.daysToPriceChange;
+
+                                if (DTPC > 0) {
+                                    DTPC--;
+                                    for (var i = 0; i < resourceList.length; i++) {
+                                        selR = market[resourceList[i]];
+                                        if (selR.nxtPrce > selR.price) {
+                                            selR.price += 1;
+                                        } else if (selR.nxtPrce < selR.price) {
+                                            selR.price -= 1;
+                                        } else {
+                                            selR.price += 0;
+                                        }
+                                        if (selR.price < 1) {
+                                            selR.price = 1;
+                                        }
+                                    }
+                                } else if (DTPC == 0) {
+                                    for (var i = 0; i < resourceList.length; i++) {
+                                        selR = market[resourceList[i]];
+                                        selR.nxtPrce += (Math.random() * 10) - 5;
+                                        if (selR.price < selR.nxtPrce) {
+                                            selR.price += 1;
+                                        } else if (selR.price > selR.nxtPrce) {
+                                            selR.price -= 1;
+                                        } else {
+                                            selR.price += 0;
+                                        }
+                                        if (selR.price < 1) {
+                                            selR.price = 1;
+                                        }
+                                    }
+                                    DTPC += 5;
+                                }
                             }
                         },
                         any: {
@@ -200,14 +463,14 @@
                         },
                         run: function(nameAndType) {    //runs .js files
                             var nmTyp = nameAndType.split('.');
-                            var name = nmTyp[0];
-                            var type = nmTyp[1];
-                            var Type = files[type];
-                            var func = Type[name];
-                            if (Type[name] == undefined) {
+                            var name = nmTyp[0];    //get the file name
+                            var type = nmTyp[1];    //get the file type
+                            var Type = files[type]; //get to the type
+                            var func = Type[name];  //compress the file to a variable
+                            if (Type[name] == undefined) {  //checking to see if the file exists
                                 lib.cmlog(msg.err[0]);
-                            } else if (type == "js") {
-                                    eval(func);
+                            } else if (type == "js") {  //checking to see if it is a .js file
+                                    eval(func); //run the file's contents as javascript
                                 } else {
                                     lib.cmlog(msg.err[1]);
                                 }
@@ -299,12 +562,13 @@
                         mover: {
                             run: function() {
                                 vars.game.mover.isRunning = 1;
-                                vars.game.mover.drawFeild();
+                                lib.cmlog('levels: 1-' + vars.game.mover.level.length);
+                                setFormVal.val = 'game.mover.level~';
                             },
                             play: function(direction) {
                                 if (vars.game.mover.isRunning == 1) {
-                                    vars.game.mover.move(direction);
                                     setFormVal.val = 'game.mover.play~';
+                                    vars.game.mover.move(direction);
                                 }
                             },
                             rules: function() {
@@ -312,6 +576,66 @@
                             },
                             end: function() {
                                 vars.game.mover.isRunning = 0;
+                            },
+                            level: function(level) {
+                                var level = vars.game.mover.level[level - 1];   //level
+                                vars.game.mover.playerX = level[0];     //set playerX
+                                vars.game.mover.playerY = level[1];     //set playerY
+                                var playerX = vars.game.mover.playerX;
+                                var playerY = vars.game.mover.playerY;
+                                vars.game.mover.goalX = level[2];
+                                vars.game.mover.goalY = level[3];
+                                var walLevel = level.slice(4, level.length);    //cut out the first two variables of level
+                                for (var i = 0; i < walLevel.length; i += 2) {
+                                    vars.game.mover.wallXs.push(walLevel[i]);   //set wall x positions
+                                    vars.game.mover.wallYs.push(walLevel[i + 1]);   //set wall y positions
+                                }
+                                vars.game.mover.drawFeild(20);
+                                
+                                setFormVal.val = 'game.mover.play~';
+                            }
+                        },
+                        tycoon: {
+                            run: function() {
+                                var tycoon = vars.game.tycoon;
+                                vars.game.tycoon.isRunning = 1;
+                                tycoon.daylyDisplay;
+                                setFormVal.val = 'game.tycoon.play';
+                            },
+                            i: function() {
+                                var resourceList = vars.game.tycoon.resourceList;
+                                var Inv = vars.game.tycoon.userInv;
+                                for (var i = 0; i < resourceList.length; i++) {
+                                    Inv = vars.game.tycoon.userInv[resourceList[i]];
+                                    lib.cmlog(resourceList[i]+': '+Inv.amnt);
+                                }
+                            },
+                            m: function() {
+                                var resourceList = vars.game.tycoon.resourceList;
+                                var Inv = vars.game.tycoon.market;
+                                for (var i = 0; i < resourceList.length; i++) {
+                                    Inv = vars.game.tycoon.market[resourceList[i]];
+                                    lib.cmlog(resourceList[i]+': '+Inv.amnt+' $'+Inv.price+' per unit');
+                                }
+                            },
+                            s: function(amnt, item) {
+                                vars.game.tycoon.sell(item, amnt);
+                            },
+                            b: function(amnt, item) {
+                                vars.game.tycoon.buy(item, amnt);
+                            },
+                            w: function(days) {
+                                vars.game.tycoon.wait(days);
+                            },
+                            r: function() {
+                                vars.game.tycoon.wait(1);
+                            },
+                            dev: {
+                                testPrice: function(days) {
+                                    for (var i = 0; i < days; i++) {
+                                        setTimeout(function() {vars.game.tycoon.wait(1); cm.game.tycoon.m();}, 500*i);
+                                    }
+                                }
                             }
                         }
                     },
@@ -338,10 +662,10 @@
                                 for (var i = 0; i < 10; i++) {
                                     setTimeout(function(i) {
                                         lib.cmlog(impr[Math.floor(Math.random()*impr.length)]);
-                                    }, 50*i);
+                                    }, 30*i);
                                 };
                             };
-                            setTimeout(function(){cm.code.tree();}, 600);
+                            setTimeout(function(){cm.code.tree();}, 350);
                         },
                         tree: function() {
                             var impr = [
@@ -363,11 +687,11 @@
                                 for (var i = 0; i < 10; i++) {
                                     setTimeout(function(i) {
                                         lib.cmlog(impr[Math.floor(Math.random()*impr.length)]);
-                                    }, 50*i);
+                                    }, 30*i);
                                 };
                             };
-                            setTimeout(function() {cm.console.clear();}, 1000);
-                                setTimeout(function() {lib.cmlog('Startup complete.');}, 1100)
+                            setTimeout(function() {cm.console.clear();}, 350);
+                            setTimeout(function() {lib.cmlog('Startup complete.');}, 360);
                         }
                     },
                     story: {
