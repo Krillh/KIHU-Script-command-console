@@ -74,6 +74,11 @@
                     val: '',
                 }
                 var vars = {
+                    system: {
+                        locked: false,
+                        pass: null,
+                        username: null
+                    },
                     game: {
                         mover: {
                             isRunning: 0,
@@ -374,7 +379,23 @@
                             setTimeout(function() {lib.cmlog('t-1');}, 5000);
                             setTimeout(function() {lib.cmlog('LAUNCH');}, 6000);
                         }
+                    },
+                    /*
+                    system: {
+                        lock: function() {
+                            if (vars.system.pass == false) {
+
+                            } else {
+                                vars.system.locked == true);
+                            }
+                        },
+                        setPassword: function(oldPass, newPass) {
+                            if (oldPass == vars.system.pass) {
+
+                            }
+                        }
                     }
+                    */
                 };
 
                 cm.code.startup();
