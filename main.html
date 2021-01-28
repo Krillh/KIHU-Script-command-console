@@ -76,8 +76,8 @@
                 var vars = {
                     system: {
                         locked: false,
-                        pass: null,
-                        username: null
+                        pass: "pass",
+                        username: "new_user"
                     },
                     game: {
                         mover: {
@@ -705,17 +705,32 @@
                         }
                     },
                     /*
-                    system: {
-                        lock: function() {
-                            if (vars.system.pass == false) {
-
-                            } else {
-                                vars.system.locked == true);
+                    session: {
+                        
+                        lock: function(pass) {
+                            if (vars.system.locked == false) {
+                                if (pass == vars.system.pass) {
+                                    vars.system.locked = true;
+                                    lib.cmlog("session locked");
+                                }
+                            } else if (vars.system.locked == true) {
+                                lib.cmlog("session is already locked");
                             }
                         },
                         setPassword: function(oldPass, newPass) {
                             if (oldPass == vars.system.pass) {
-
+                                vars.system.pass = newPass;
+                                lib.cmlog("password reset");
+                            }
+                        },
+                        unlock: function(pass) {
+                            if (vars.system.locked == true) {
+                                if (pass == vars.system.pass) {
+                                    vars.system.locked = false;
+                                    lib.cmlog("session unlocked");
+                                }
+                            } else if (vars.system.locked == false) {
+                                lib.cmlog("session is already unlocked");
                             }
                         }
                     }
@@ -731,30 +746,33 @@
 
                     var $input = $(this).find('input');     //step 1 of getting the form input
                     var input = $input.val();       //step 2 of getting the form input
-
-                    lib.usrLog(input);      //initially outputting the user's input to keep track of what happened later
                     var prts = input.split("~");      //splits the user's input from functin called to arguments
-                    var parts = prts[0].split('.');     //splits the first part of the input(the function naming part)
-                    var fn = null;      //fn will be called later, as the function
 
-                    for (var i = 0; i< parts.length ; i++) {
-                        if (fn == null) {
-                            fn = cm[parts[i]];      //if this is the first loop, build the first part of the fn function
+                    //if ((vars.system.locked == false) && (prts[0] != "session.unlock")) {
+                        lib.usrLog(input);      //initially outputting the user's input to keep track of what happened later
+                        var parts = prts[0].split('.');     //splits the first part of the input(the function naming part)
+                        var fn = null;      //fn will be called later, as the function
+
+                    
+                        for (var i = 0; i< parts.length ; i++) {
+                            if (fn == null) {
+                                fn = cm[parts[i]];      //if this is the first loop, build the first part of the fn function
+                            } else {
+                                fn = fn[parts[i]];      //if this is not the first loop, build on top of the fn function
+                            }
+                        };
+
+                        if (prts[1] == undefined) {
+                            fn();       //if there are no arguments, call fn without any
                         } else {
-                            fn = fn[parts[i]];      //if this is not the first loop, build on top of the fn function
+                            var arguments = prts[1].split('//');   //if there are args, split them on ' & '
+                            if (arguments.length == 1) {
+                                fn(arguments[0]);       //if there is one arg, call fn with one
+                            } else if (arguments.length == 2) {
+                                fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
+                            }
                         }
-                    };
-
-                    if (prts[1] == undefined) {
-                        fn();       //if there are no arguments, call fn without any
-                    } else {
-                        var arguments = prts[1].split('//');   //if there are args, split them on ' & '
-                        if (arguments.length == 1) {
-                            fn(arguments[0]);       //if there is one arg, call fn with one
-                        } else if (arguments.length == 2) {
-                            fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
-                        }
-                    }
+                    //};
                     $('#form').val(setFormVal.val);
                     setFormVal.val = ''
                 });
