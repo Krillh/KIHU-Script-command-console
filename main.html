@@ -704,6 +704,21 @@
                             setTimeout(function() {lib.cmlog('LAUNCH');}, 6000);
                         }
                     },
+                    calculate: {
+                        compundintrest: function (startingVal, intrestPersent, adding) {
+                            if (adding === 0) {
+                                for (var i = 0; i < 100; i++) {
+                                    var mons = startingVal*((1+(intrestPersent/100))^i);
+                                    lib.log("time: "+i+": $"+mons);
+                                }
+                            } else {
+                                for (var i = 0; i < 100; i++) {
+                                    var mons = (startingVal+(i*adding))*((1+(intrestPersent/100))^i);
+                                    lib.log("time: "+i+": $"+mons);
+                                }
+                            };
+                        }
+                    }
                     /*
                     session: {
                         
@@ -770,6 +785,8 @@
                                 fn(arguments[0]);       //if there is one arg, call fn with one
                             } else if (arguments.length == 2) {
                                 fn(arguments[0], arguments[1]);     //if there are 2 args, call fn with 2
+                            } else if (arguments.length == 3) {
+                                fn(arguments[0], arguments[1], arguments[2]);     //if there are 2 args, call fn with 2
                             }
                         }
                     //};
